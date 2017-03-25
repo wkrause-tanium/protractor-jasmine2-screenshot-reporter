@@ -39,18 +39,18 @@ function Jasmine2ScreenShotReporter(opts) {
       };
 
   var linkTemplate = _.template(
-      '<li id="<%= id %>" ' +
+      '<li onclick="myfunc(this)" id="<%= id %>" ' +
       'class="<%= cssClass %>" ' +
       'data-spec="<%= specId %>" ' +
       'data-name="<%= name %>" ' +
       'data-browser="<%= browserName %>">' +
-      '<%= mark %>' +
-      '<a href="<%= filename[\'main\'] %>"><%= name %></a>' +
       '<% _.forEach(filename, function (val, key) { if (key != \'main\') { %>' +
       ' [<a href="<%= val %>"><%= key %></a>] ' +
       '<% } }) %>' +
-      '(<%= duration %> s)' +
+      '<div class="text-block"><%= mark %><%= name %>' +
+      ' (<%= duration %> s)</div>' +
       '<%= reason %>' +
+      '<img class="screenshot isHidden" height=640 width=800 src="<%= filename[\'main\'] %>">' +
       '</li>'
   );
 
@@ -74,6 +74,11 @@ function Jasmine2ScreenShotReporter(opts) {
       '<meta charset="utf-8">' +
       '<style>' +
       'body { font-family: Arial; }' +
+      '.text-block {cursor: pointer;}' +
+      '.isHidden>img {display: none;}' +
+      '.isVisible>img {display: block;}' +
+      '.screenshot.isHidden {display: none;}' +
+      '.screenshot.isVisible {display: block;}' +
       'ul { list-style-position: inside; }' +
       'span.passed { padding: 0 1em; color: green; }' +
       'span.failed { padding: 0 1em; color: red; }' +
@@ -82,6 +87,27 @@ function Jasmine2ScreenShotReporter(opts) {
       '</style>' +
       '<%= userCss %>' +
       '<script type="text/javascript">' +
+      `function myfunc(div) {
+        var myElements = div.querySelectorAll(".screenshot"); 
+        var className = myElements[0].getAttribute("class");
+        if(className=="screenshot isHidden") {
+          myElements[0].className = "screenshot isVisible";
+        }
+        else{
+          myElements[0].className = "screenshot isHidden";
+        }
+      }` +
+      `function toggleImageShow() {
+          console.log('herer');
+          var myElements = document.querySelectorAll(".screenshot"); 
+          for (var i = 0; i < myElements.length; i++) {
+              if( myElements[i].className === 'screenshot isHidden') {
+                myElements[i].className = 'screenshot isVisible';
+              } else{
+                myElements[i].className = 'screenshot isHidden';
+              }
+          }
+        }` +
       'function showhide(id) {' +
       'var e = document.getElementById(id);' +
       'e.style.display = (e.style.display == "block") ? "none" : "block";' +
@@ -90,9 +116,6 @@ function Jasmine2ScreenShotReporter(opts) {
       'var failedSpecs = document.querySelectorAll("li.failed");' +
       'var quickLinksContainer = document.getElementById("quickLinks");' +
       'if (!quickLinksContainer) return;' +
-      'if (failedSpecs.length > 0) { ' +
-      'document.getElementById("quickLinksHeader").textContent = "Quicklink of Failure"' +
-      '}' +
       'for (var i = 0; i < failedSpecs.length; ++i) {' +
       'var li = document.createElement("li");' +
       'var a = document.createElement("a");' +
@@ -136,12 +159,12 @@ function Jasmine2ScreenShotReporter(opts) {
       '<li id="summaryTotalSpecs">Total specs tested: </li>' +
       '<li id="summaryTotalFailed">Total failed: </li>' +
       '</ul>' +
+      '<button onClick="toggleImageShow()">Toggle Images</button>' + 
       '<%= quickLinks %>' +
       '</div>'
   );
 
   var addQuickLinks = _.template(
-      '<h4 id="quickLinksHeader"></h4>' +
       '<ul id="quickLinks"></ul>'
   );
 

@@ -50,7 +50,7 @@ function Jasmine2ScreenShotReporter(opts) {
       '<div class="text-block"><%= mark %><%= name %>' +
       ' (<%= duration %> s)</div>' +
       '<%= reason %>' +
-      '<img class="screenshot isHidden" height=640 width=800 src="<%= filename[\'main\'] %>">' +
+      '<img class="screenshot isHidden" height=814 width=750 src="<%= filename[\'main\'] %>">' +
       '</li>'
   );
 
